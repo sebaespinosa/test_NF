@@ -3,16 +3,16 @@
 package main
 
 import (
-"context"
-"log"
-"time"
+	"context"
+	"log"
+	"time"
 
-"github.com/sebaespinosa/test_NF/config"
-"github.com/sebaespinosa/test_NF/internal/database"
-"github.com/sebaespinosa/test_NF/internal/logging"
-"github.com/sebaespinosa/test_NF/repository"
-"github.com/sebaespinosa/test_NF/service"
-"go.uber.org/zap"
+	"github.com/sebaespinosa/test_NF/config"
+	"github.com/sebaespinosa/test_NF/internal/database"
+	"github.com/sebaespinosa/test_NF/internal/logging"
+	"github.com/sebaespinosa/test_NF/repository"
+	"github.com/sebaespinosa/test_NF/service"
+	"go.uber.org/zap"
 )
 
 func main() {
@@ -42,7 +42,7 @@ func main() {
 	sectorService := service.NewIrrigationSectorService(sectorRepo, logger)
 	dataService := service.NewIrrigationDataService(dataRepo, logger)
 
-	seedFilePath := "./data/seeds/irrigation_seed.json"
+	seedFilePath := "./internal/seeds/irrigation_seed.json"
 	seedData, err := farmService.LoadSeedData(seedFilePath)
 	if err != nil {
 		logger.Fatal("failed to load seed data", zap.Error(err))
@@ -64,8 +64,8 @@ func main() {
 	}
 
 	logger.Info("database seeding completed successfully",
-zap.Int("farms", len(seedData.Farms)),
-zap.Int("sectors", len(seedData.IrrigationSectors)),
-zap.Int("irrigation_data", len(seedData.IrrigationData)),
-)
+		zap.Int("farms", len(seedData.Farms)),
+		zap.Int("sectors", len(seedData.IrrigationSectors)),
+		zap.Int("irrigation_data", len(seedData.IrrigationData)),
+	)
 }

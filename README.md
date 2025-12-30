@@ -51,7 +51,7 @@ To view logs in Grafana, go to http://localhost:3000 (admin/admin), add Loki as 
 - Safe to run multiple times (AutoMigrate is idempotent)
 
 **Seed Data:**
-- Sample data available in [data/seeds/irrigation_seed.json](data/seeds/irrigation_seed.json)
+- Sample data available in [internal/seeds/irrigation_seed.json](internal/seeds/irrigation_seed.json)
 - Includes 3 farms, 6 irrigation sectors, and 12 irrigation records
 - CLI scripts provided in [internal/scripts/](internal/scripts/) folder:
   - `go run internal/scripts/seed.go` — Loads all seed data (idempotent)
@@ -115,7 +115,7 @@ test_NF/
 | **service** | Implement business logic, orchestrate repositories, handle validation |
 | **repository** | Pure data access operations using GORM, no business logic |
 | **model** | Define request/response DTOs and database entities |
-| **data/seeds** | JSON seed files for deterministic database initialization |
+| **internal/seeds** | JSON seed files for deterministic database initialization |
 | **documentation** | Swagger/OpenAPI specs and performance optimization guides |
 | **internal/database** | Initialize GORM, configure connection pooling, run AutoMigrate |
 | **internal/logging** | Setup structured JSON logging with correlation IDs |
