@@ -225,6 +225,7 @@ go test ./controller -v -run TestGetAnalytics_StatusOK
 ## References
 
 - [UnitTesting.md](./UnitTesting.md) - Test strategy and tooling guide
+- [IntegrationTesting.md](./IntegrationTesting.md) - End-to-end/API scenarios with PostgreSQL
 - [testify documentation](https://github.com/stretchr/testify)
 - [gomock documentation](https://github.com/uber-go/mock)
 - [GORM SQLite driver](https://gorm.io/docs/connecting_to_the_database.html#SQLite)

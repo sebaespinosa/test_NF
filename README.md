@@ -271,7 +271,8 @@ See `.github/copilot-instructions.md` for detailed step-by-step guide.
 
 Create tests alongside source files:
 - `*_test.go` — Use standard Go `testing` package
-- Run with: `go test ./...`
+- Run unit tests: `go test ./...` (strategy in [documentation/UnitTesting.md](documentation/UnitTesting.md))
+- Run integration checks: see [documentation/IntegrationTesting.md](documentation/IntegrationTesting.md); after `docker-compose up -d postgres jaeger loki grafana promtail` and seeding, run `bash internal/scripts/run_integration.sh`.
 
 
 ## References

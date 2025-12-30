@@ -10,14 +10,8 @@ Assumptions:
 - No caching strategy
 
 Definitions:
-- Loki
-- Jaeger with OpenTelemetry
-- filename with folder suffix for controller, service, repository, model folders
+- Store logs with Loki
+- Use Jaeger for APM and tracing with OpenTelemetry
+- Filename with folder suffix for controller, service, repository, model folders
 - Add Pagination to the analytics endpoint for performance
 - Custom status codes (206 for example) to handle cases like empty responses for non-existing data on the time range
-
-
-Dudas:
-- Es el go server necesario cuando voy a usar nginx?
-
-- Entidades de GORM vs entidades en models? esta bien ahí, el manejo en models es para el DTO? Agregar auto swagger
