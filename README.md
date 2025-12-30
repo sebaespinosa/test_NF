@@ -36,9 +36,12 @@ curl http://localhost:8080/health
 | **Jaeger UI** | http://localhost:16686 | Distributed tracing visualization |
 | **Grafana** | http://localhost:3000 | Log/metric dashboards (admin/admin) |
 | **Loki** | http://localhost:3100 | Log aggregation |
+| **Promtail** | (internal) | Log shipper (pushes container logs to Loki) |
 | **PostgreSQL** | localhost:5432 | Database |
 | **Swagger UI** | http://localhost:8080/swagger/index.html | API docs viewer (navigate directly to /swagger/index.html) |
 | **Swagger JSON** | http://localhost:8080/docs/swagger.json | OpenAPI spec |
+
+To view logs in Grafana, go to http://localhost:3000 (admin/admin), add Loki as a datasource (http://loki:3100), and query logs.
 
 ### Database Seeding
 
@@ -99,6 +102,7 @@ test_NF/
 ├── .env                 # Environment variables (local development)
 ├── docker-compose.yml   # Local infrastructure stack
 ├── loki-config.yaml     # Loki configuration
+├── promtail-config.yaml # Promtail configuration (log shipping)
 └── go.mod/go.sum        # Go dependencies
 ```
 
@@ -174,10 +178,18 @@ LOKI_URL=http://localhost:3100
 - JSON format with ISO8601 timestamps
 - Automatic correlation IDs (request_id, trace_id) via middleware
 - Context-aware logging throughout request lifecycle
+- Logs shipped to Loki via Promtail for centralized storage and querying
+
+### Log Aggregation (Loki + Promtail)
+- **Loki** collects and stores logs
+- **Promtail** scrapes container logs from Docker and pushes them to Loki
+- Queryable via Grafana at http://localhost:3000
+- Query example in Grafana: `{job="docker", container_name=~"irrigation.*"}`
 
 ### Distributed Tracing
 - Jaeger captures all requests for flow visualization
 - Traces all requests by default (`JAEGER_SAMPLER_PARAM=1`)
+- Includes database query spans via GORM OpenTelemetry plugin
 - View traces in Jaeger UI at http://localhost:16686
 
 ## Development

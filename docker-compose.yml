@@ -43,12 +43,13 @@ services:
   loki:
     image: grafana/loki:latest
     container_name: irrigation_loki
+    user: "0:0"
     ports:
       - "3100:3100"
     environment:
       - LOKI_CONFIG=/etc/loki/local-config.yaml
     volumes:
-      - ./loki-config.yaml:/etc/loki/local-config.yaml
+      - ./loki-config.yaml:/etc/loki/local-config.yaml:ro
       - loki_data:/loki
     networks:
       - irrigation_network
@@ -66,6 +67,20 @@ services:
       - loki
     volumes:
       - grafana_data:/var/lib/grafana
+    networks:
+      - irrigation_network
+
+  # Promtail for log shipping to Loki
+  promtail:
+    image: grafana/promtail:latest
+    container_name: irrigation_promtail
+    volumes:
+      - ./promtail-config.yaml:/etc/promtail/config.yaml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail/config.yaml
+    depends_on:
+      - loki
     networks:
       - irrigation_network
 
