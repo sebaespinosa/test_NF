@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database (LTS version)
+  postgres:
+    image: postgres:16-alpine
+    container_name: irrigation_postgres
+    environment:
+      POSTGRES_USER: irrigationuser
+      POSTGRES_PASSWORD: irrigationpass
+      POSTGRES_DB: irrigation_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U irrigationuser -d irrigation_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - irrigation_network
+
+  # Jaeger for Distributed Tracing
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: irrigation_jaeger
+    environment:
+      COLLECTOR_ZIPKIN_HOST_PORT: ":9411"
+    ports:
+      - "6831:6831/udp"  # Jaeger agent
+      - "16686:16686"    # UI
+      - "14268:14268"    # Collector HTTP
+    networks:
+      - irrigation_network
+
+  # Loki for Log Aggregation (Standalone)
+  loki:
+    image: grafana/loki:latest
+    container_name: irrigation_loki
+    ports:
+      - "3100:3100"
+    environment:
+      - LOKI_CONFIG=/etc/loki/local-config.yaml
+    volumes:
+      - ./loki-config.yaml:/etc/loki/local-config.yaml
+      - loki_data:/loki
+    networks:
+      - irrigation_network
+
+  # Grafana for Visualization (optional)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: irrigation_grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_SECURITY_ADMIN_USER: admin
+    ports:
+      - "3000:3000"
+    depends_on:
+      - loki
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - irrigation_network
+
+volumes:
+  postgres_data:
+  loki_data:
+  grafana_data:
+
+networks:
+  irrigation_network:
+    driver: bridge
