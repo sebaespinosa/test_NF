@@ -52,7 +52,16 @@ To view logs in Grafana, go to http://localhost:3000 (admin/admin), add Loki as 
 
 **Seed Data:**
 - Sample data available in [internal/seeds/irrigation_seed.json](internal/seeds/irrigation_seed.json)
-- Includes 3 farms, 6 irrigation sectors, and 12 irrigation records
+- **1,680 irrigation records** spanning 3 years (2023-2025) with same date ranges for year-over-year comparisons
+- 2 farms with 4 irrigation sectors each (8 sectors total)
+- Irrigation season data: March 1 - October 31 (recorded on Tuesdays and Fridays each week)
+- Seasonal variation: 20-35mm nominal amounts (higher in summer Jun-Aug)
+- Efficiency profiles (real vs nominal water usage):
+  - Excellent: North Grove (Farm 2) at 99%
+  - Good: North Field (Farm 1) at 95%, East Orchard (Farm 2) at 92%
+  - Average: South Field (Farm 1) at 88%, West Orchard (Farm 2) at 85%
+  - Poor: East Pasture (Farm 1) at 75% (leaks), South Grove (Farm 2) at 80%
+- Deterministic variation enables consistent year-over-year analysis
 - CLI scripts provided in [internal/scripts/](internal/scripts/) folder:
   - `go run internal/scripts/seed.go` — Loads all seed data (idempotent)
   - `go run internal/scripts/cleanup.go` — Removes all seeded data
@@ -205,7 +214,7 @@ LOKI_URL=http://localhost:3100
 	go install github.com/swaggo/swag/cmd/swag@latest
 	$(go env GOPATH)/bin/swag init --output ./swagger --dir ./ --outputTypes json,yaml
 	```
-	(Static files are served from `swagger/swagger.json` and `swagger/swagger.yaml`; Go package is registered via `_ "github.com/sebaespinosa/test_NF/swagger"` in main.go.)
+	(Static files are served from `swagger/swagger.json` and `swagger/swagger.yaml`.)
 
 ### Add a New Endpoint
 
