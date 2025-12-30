@@ -40,6 +40,33 @@ curl http://localhost:8080/health
 | **Swagger UI** | http://localhost:8080/swagger/index.html | API docs viewer (navigate directly to /swagger/index.html) |
 | **Swagger JSON** | http://localhost:8080/docs/swagger.json | OpenAPI spec |
 
+### Database Seeding
+
+**Schema Migration:**
+- Database schema is created automatically on startup via GORM AutoMigrate
+- Migrates `Farm`, `IrrigationSector`, and `IrrigationData` tables with optimized indexes
+- Safe to run multiple times (AutoMigrate is idempotent)
+
+**Seed Data:**
+- Sample data available in [data/seeds/irrigation_seed.json](data/seeds/irrigation_seed.json)
+- Includes 3 farms, 6 irrigation sectors, and 12 irrigation records
+- CLI scripts provided in [internal/scripts/](internal/scripts/) folder:
+  - `go run internal/scripts/seed.go` — Loads all seed data (idempotent)
+  - `go run internal/scripts/cleanup.go` — Removes all seeded data
+- Service layer provides reusable methods:
+  - `FarmService.SeedFarms()` — Loads farms from JSON
+  - `IrrigationSectorService.SeedSectors()` — Loads sectors
+  - `IrrigationDataService.SeedData()` — Loads irrigation records
+- Seeding is idempotent (uses GORM `Save()` to upsert)
+
+**Performance:**
+- See [DatabaseOptimization.md](documentation/DatabaseOptimization.md) for:
+  - Composite index strategy for large datasets
+  - SQL-level aggregation patterns
+  - Query optimization techniques
+  - Connection pool tuning
+
+
 ## Tech Stack
 
 - **Framework:** [Gin](https://gin-gonic.com/) — Lightweight HTTP framework
@@ -59,12 +86,15 @@ test_NF/
 ├── service/             # Business logic and domain rules
 ├── repository/          # Database access layer (GORM queries)
 ├── model/               # Data structures (DTOs, database entities)
+├── data/
+│   └── seeds/           # Seed data JSON files for database initialization
 ├── internal/
-│   ├── database/        # Database initialization and pooling
+│   ├── database/        # Database initialization, pooling, and AutoMigrate
 │   ├── logging/         # Structured JSON logger with context awareness
 │   ├── middleware/      # HTTP middleware (request tracing, correlation IDs)
-│   └── observability/   # Jaeger tracing setup and initialization
-├── documentation/       # API specs and documentation
+│   ├── observability/   # Jaeger tracing setup and initialization
+│   └── scripts/         # CLI utilities (seed.go, cleanup.go)
+├── documentation/       # API specs (Swagger), performance guides
 ├── main.go              # Application entry point
 ├── .env                 # Environment variables (local development)
 ├── docker-compose.yml   # Local infrastructure stack
@@ -81,10 +111,13 @@ test_NF/
 | **service** | Implement business logic, orchestrate repositories, handle validation |
 | **repository** | Pure data access operations using GORM, no business logic |
 | **model** | Define request/response DTOs and database entities |
-| **internal/database** | Initialize GORM, configure connection pooling |
+| **data/seeds** | JSON seed files for deterministic database initialization |
+| **documentation** | Swagger/OpenAPI specs and performance optimization guides |
+| **internal/database** | Initialize GORM, configure connection pooling, run AutoMigrate |
 | **internal/logging** | Setup structured JSON logging with correlation IDs |
 | **internal/middleware** | Add request tracing, generate/extract trace IDs |
 | **internal/observability** | Initialize Jaeger for distributed tracing |
+| **internal/scripts** | CLI utilities for database operations (seeding, cleanup) |
 
 ## Architecture
 
@@ -98,6 +131,16 @@ HTTP Request → Controller → Service → Repository → Database
 - **Service:** Business logic and validation
 - **Repository:** Data access only
 - **Dependency Injection:** Constructor-based, no global state
+
+### Data Model
+
+The system manages irrigation analytics across three core entities:
+
+- **Farm** — Top-level agricultural properties
+- **IrrigationSector** — Subdivisions of farms with irrigation capabilities (linked to farms)
+- **IrrigationData** — Time-series irrigation event records tracking nominal vs. actual water usage (linked to farms and sectors)
+
+All entities use GORM with optimized composite indexes for time-range queries. See [DatabaseOptimization.md](documentation/DatabaseOptimization.md) for indexing strategy and query patterns.
 
 ## Configuration
 
@@ -180,6 +223,12 @@ go fmt ./...
 # Lint
 golangci-lint run ./...
 
+# Seed database with sample data (idempotent)
+go run internal/scripts/seed.go
+
+# Clean up all seeded data
+go run internal/scripts/cleanup.go
+
 # View logs
 docker-compose logs -f postgres
 docker-compose logs -f loki
@@ -187,6 +236,7 @@ docker-compose logs -f loki
 # Database access
 psql -h localhost -U irrigationuser -d irrigation_db
 ```
+
 
 ## References
 

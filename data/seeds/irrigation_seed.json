@@ -1,0 +1,158 @@
+{
+  "farms": [
+    {
+      "id": 1,
+      "name": "Green Valley Farm"
+    },
+    {
+      "id": 2,
+      "name": "Sunset Orchards"
+    },
+    {
+      "id": 3,
+      "name": "River Bend Agriculture"
+    }
+  ],
+  "irrigation_sectors": [
+    {
+      "id": 1,
+      "farm_id": 1,
+      "name": "North Field"
+    },
+    {
+      "id": 2,
+      "farm_id": 1,
+      "name": "South Field"
+    },
+    {
+      "id": 3,
+      "farm_id": 2,
+      "name": "East Orchard"
+    },
+    {
+      "id": 4,
+      "farm_id": 2,
+      "name": "West Orchard"
+    },
+    {
+      "id": 5,
+      "farm_id": 3,
+      "name": "Field A"
+    },
+    {
+      "id": 6,
+      "farm_id": 3,
+      "name": "Field B"
+    }
+  ],
+  "irrigation_data": [
+    {
+      "id": 1,
+      "farm_id": 1,
+      "irrigation_sector_id": 1,
+      "start_time": "2024-01-15T06:00:00Z",
+      "end_time": "2024-01-15T08:30:00Z",
+      "nominal_amount": 25.50,
+      "real_amount": 24.80
+    },
+    {
+      "id": 2,
+      "farm_id": 1,
+      "irrigation_sector_id": 1,
+      "start_time": "2024-01-18T06:00:00Z",
+      "end_time": "2024-01-18T08:45:00Z",
+      "nominal_amount": 26.00,
+      "real_amount": 25.30
+    },
+    {
+      "id": 3,
+      "farm_id": 1,
+      "irrigation_sector_id": 2,
+      "start_time": "2024-01-16T14:00:00Z",
+      "end_time": "2024-01-16T16:30:00Z",
+      "nominal_amount": 30.00,
+      "real_amount": 29.50
+    },
+    {
+      "id": 4,
+      "farm_id": 1,
+      "irrigation_sector_id": 2,
+      "start_time": "2024-01-20T14:00:00Z",
+      "end_time": "2024-01-20T16:15:00Z",
+      "nominal_amount": 28.75,
+      "real_amount": 28.20
+    },
+    {
+      "id": 5,
+      "farm_id": 2,
+      "irrigation_sector_id": 3,
+      "start_time": "2024-01-17T07:00:00Z",
+      "end_time": "2024-01-17T09:00:00Z",
+      "nominal_amount": 22.00,
+      "real_amount": 21.50
+    },
+    {
+      "id": 6,
+      "farm_id": 2,
+      "irrigation_sector_id": 3,
+      "start_time": "2024-01-22T07:00:00Z",
+      "end_time": "2024-01-22T09:15:00Z",
+      "nominal_amount": 23.50,
+      "real_amount": 22.80
+    },
+    {
+      "id": 7,
+      "farm_id": 2,
+      "irrigation_sector_id": 4,
+      "start_time": "2024-01-19T15:00:00Z",
+      "end_time": "2024-01-19T17:30:00Z",
+      "nominal_amount": 27.00,
+      "real_amount": 26.40
+    },
+    {
+      "id": 8,
+      "farm_id": 2,
+      "irrigation_sector_id": 4,
+      "start_time": "2024-01-23T15:00:00Z",
+      "end_time": "2024-01-23T17:00:00Z",
+      "nominal_amount": 25.00,
+      "real_amount": 24.60
+    },
+    {
+      "id": 9,
+      "farm_id": 3,
+      "irrigation_sector_id": 5,
+      "start_time": "2024-01-14T05:30:00Z",
+      "end_time": "2024-01-14T08:00:00Z",
+      "nominal_amount": 32.00,
+      "real_amount": 31.20
+    },
+    {
+      "id": 10,
+      "farm_id": 3,
+      "irrigation_sector_id": 5,
+      "start_time": "2024-01-21T05:30:00Z",
+      "end_time": "2024-01-21T08:30:00Z",
+      "nominal_amount": 33.50,
+      "real_amount": 32.80
+    },
+    {
+      "id": 11,
+      "farm_id": 3,
+      "irrigation_sector_id": 6,
+      "start_time": "2024-01-16T13:00:00Z",
+      "end_time": "2024-01-16T15:30:00Z",
+      "nominal_amount": 29.00,
+      "real_amount": 28.50
+    },
+    {
+      "id": 12,
+      "farm_id": 3,
+      "irrigation_sector_id": 6,
+      "start_time": "2024-01-24T13:00:00Z",
+      "end_time": "2024-01-24T15:45:00Z",
+      "nominal_amount": 30.50,
+      "real_amount": 29.80
+    }
+  ]
+}
