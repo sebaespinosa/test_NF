@@ -95,7 +95,7 @@ func main() {
 	router.GET("/health", healthController.GetHealth)
 
 	// Swagger docs
-	router.StaticFile("/docs/swagger.json", "./documentation/swagger.json")
+	router.StaticFile("/docs/swagger.json", "./swagger/swagger.json")
 	swaggerURL := ginSwagger.URL("/docs/swagger.json")
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, swaggerURL))
 

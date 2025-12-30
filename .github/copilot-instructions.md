@@ -404,9 +404,9 @@ func (c *UserController) GetUser(ctx *gin.Context) {
 **Regenerating Swagger Spec:**
 ```
 go install github.com/swaggo/swag/cmd/swag@latest
-$(go env GOPATH)/bin/swag init --output ./documentation --dir ./ --outputTypes json,yaml
+$(go env GOPATH)/bin/swag init --output ./swagger --dir ./ --outputTypes json,yaml
 ```
-Static docs are served from `documentation/swagger.json` via `/swagger/doc.json` and the UI at `/swagger/index.html`.
+Static docs are served from `swagger/swagger.json` via `/docs/swagger.json` and the UI at `/swagger/index.html`.
 
 **5. Register Route** (`main.go`)
 ```go

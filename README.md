@@ -96,8 +96,10 @@ test_NF/
 │   ├── logging/         # Structured JSON logger with context awareness
 │   ├── middleware/      # HTTP middleware (request tracing, correlation IDs)
 │   ├── observability/   # Jaeger tracing setup and initialization
-│   └── scripts/         # CLI utilities (seed.go, cleanup.go)
-├── documentation/       # API specs (Swagger), performance guides
+│   ├── scripts/         # CLI utilities (seed.go, cleanup.go)
+│   └── seeds/           # JSON seed files for database initialization
+├── documentation/       # Performance optimization guides
+├── swagger/             # Swagger/OpenAPI specs and generated docs
 ├── main.go              # Application entry point
 ├── .env                 # Environment variables (local development)
 ├── docker-compose.yml   # Local infrastructure stack
@@ -116,7 +118,8 @@ test_NF/
 | **repository** | Pure data access operations using GORM, no business logic |
 | **model** | Define request/response DTOs and database entities |
 | **internal/seeds** | JSON seed files for deterministic database initialization |
-| **documentation** | Swagger/OpenAPI specs and performance optimization guides |
+| **documentation** | Performance optimization guides and best practices |
+| **swagger** | Swagger/OpenAPI specs, generated documentation, and API stubs |
 | **internal/database** | Initialize GORM, configure connection pooling, run AutoMigrate |
 | **internal/logging** | Setup structured JSON logging with correlation IDs |
 | **internal/middleware** | Add request tracing, generate/extract trace IDs |
@@ -200,9 +203,9 @@ LOKI_URL=http://localhost:3100
 - Regenerate spec (JSON/YAML only):
 	```bash
 	go install github.com/swaggo/swag/cmd/swag@latest
-	$(go env GOPATH)/bin/swag init --output ./documentation --dir ./ --outputTypes json,yaml
+	$(go env GOPATH)/bin/swag init --output ./swagger --dir ./ --outputTypes json,yaml
 	```
-	(Static files are served from `documentation/swagger.json` and `documentation/swagger.yaml`; Go stubs are not used.)
+	(Static files are served from `swagger/swagger.json` and `swagger/swagger.yaml`; Go package is registered via `_ "github.com/sebaespinosa/test_NF/swagger"` in main.go.)
 
 ### Add a New Endpoint
 
