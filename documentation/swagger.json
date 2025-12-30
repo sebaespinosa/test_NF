@@ -36,58 +36,9 @@
                     }
                 }
             }
-        },
-        "/test_farms": {
-            "get": {
-                "description": "Returns all farms in the database",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "farms"
-                ],
-                "summary": "Get all farms",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.Farm"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
-        "model.Farm": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
         "model.HealthResponse": {
             "type": "object",
             "properties": {

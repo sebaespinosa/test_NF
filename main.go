@@ -78,15 +78,12 @@ func main() {
 
 	// Initialize repositories
 	healthRepo := repository.NewHealthRepository(db)
-	farmRepo := repository.NewFarmRepository(db)
 
 	// Initialize services
 	healthService := service.NewHealthService(healthRepo, logger, cfg.Service.Version)
-	farmService := service.NewFarmService(farmRepo, logger)
 
 	// Initialize controllers
 	healthController := controller.NewHealthController(healthService)
-	farmController := controller.NewFarmController(farmService)
 
 	// Setup Gin router
 	router := gin.Default()
@@ -96,7 +93,6 @@ func main() {
 
 	// Register routes
 	router.GET("/health", healthController.GetHealth)
-	router.GET("/test_farms", farmController.GetAllFarms)
 
 	// Swagger docs
 	router.StaticFile("/docs/swagger.json", "./documentation/swagger.json")
