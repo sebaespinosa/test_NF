@@ -5,7 +5,7 @@ A production-ready REST API for managing irrigation analytics in agricultural pl
 ## Quick Start
 
 ### Prerequisites
-- Go 1.22+
+- Go 1.25.5 (recommended; 1.22+ may work but not validated)
 - Docker & Docker Compose
 
 ### Setup & Run
@@ -16,6 +16,9 @@ docker-compose up -d
 
 # 2. Install dependencies
 go mod download
+
+# 3. Seed the database
+go run internal/scripts/seed.go
 
 # 3. Run the API server
 go run main.go
@@ -65,10 +68,6 @@ To view logs in Grafana, go to http://localhost:3000 (admin/admin), add Loki as 
 - CLI scripts provided in [internal/scripts/](internal/scripts/) folder:
   - `go run internal/scripts/seed.go` — Loads all seed data (idempotent)
   - `go run internal/scripts/cleanup.go` — Removes all seeded data
-- Service layer provides reusable methods:
-  - `FarmService.SeedFarms()` — Loads farms from JSON
-  - `IrrigationSectorService.SeedSectors()` — Loads sectors
-  - `IrrigationDataService.SeedData()` — Loads irrigation records
 - Seeding is idempotent (uses GORM `Save()` to upsert)
 
 **Performance:**
@@ -273,35 +272,6 @@ See `.github/copilot-instructions.md` for detailed step-by-step guide.
 Create tests alongside source files:
 - `*_test.go` — Use standard Go `testing` package
 - Run with: `go test ./...`
-
-## Common Commands
-
-```bash
-# Build
-go build -o irrigation-api main.go
-
-# Test
-go test ./...
-
-# Format
-go fmt ./...
-
-# Lint
-golangci-lint run ./...
-
-# Seed database with sample data (idempotent)
-go run internal/scripts/seed.go
-
-# Clean up all seeded data
-go run internal/scripts/cleanup.go
-
-# View logs
-docker-compose logs -f postgres
-docker-compose logs -f loki
-
-# Database access
-psql -h localhost -U irrigationuser -d irrigation_db
-```
 
 
 ## References

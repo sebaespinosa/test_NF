@@ -1,17 +1,24 @@
 package controller
 
 import (
+	"context"
 	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sebaespinosa/test_NF/model"
 	"github.com/sebaespinosa/test_NF/service"
 )
 
+// AnalyticsService is the contract the controller depends on (facilitates mocking in tests).
+type AnalyticsService interface {
+	GetAnalytics(ctx context.Context, farmID uint, startDate, endDate *time.Time, sectorID *uint, aggregation string, page, limit int) (*model.IrrigationAnalyticsResponse, error)
+}
+
 // AnalyticsController handles HTTP requests for irrigation analytics
 type AnalyticsController struct {
-	service *service.IrrigationAnalyticsService
+	service AnalyticsService
 }
 
 // NewAnalyticsController creates a new AnalyticsController instance

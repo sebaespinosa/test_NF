@@ -14,13 +14,20 @@ import (
 
 // IrrigationAnalyticsService handles business logic for irrigation analytics
 type IrrigationAnalyticsService struct {
-	repo   *repository.IrrigationDataRepository
+	repo   AnalyticsRepository
 	logger *logging.Logger
+}
+
+// AnalyticsRepository defines the data access contract for analytics operations.
+type AnalyticsRepository interface {
+	GetAnalyticsForFarmByDateRange(ctx context.Context, farmID uint, startTime, endTime time.Time, aggregation string, limit, offset int) ([]repository.AnalyticsAggregation, int64, error)
+	GetYoYComparison(ctx context.Context, farmID uint, startTime, endTime time.Time, aggregation string) (map[int]repository.YoYAnalyticsData, error)
+	GetSectorBreakdownForFarm(ctx context.Context, farmID uint, sectorID *uint, startTime, endTime time.Time) ([]repository.SectorAnalyticsData, error)
 }
 
 // NewIrrigationAnalyticsService creates a new IrrigationAnalyticsService instance
 func NewIrrigationAnalyticsService(
-	repo *repository.IrrigationDataRepository,
+	repo AnalyticsRepository,
 	logger *logging.Logger,
 ) *IrrigationAnalyticsService {
 	return &IrrigationAnalyticsService{
