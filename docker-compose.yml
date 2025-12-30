@@ -23,14 +23,19 @@ services:
 
   # Jaeger for Distributed Tracing
   jaeger:
-    image: jaegertracing/all-in-one:latest
+    # Using latest v1 from Docker Hub to avoid GHCR auth issues.
+    # If you want v2, run: docker login ghcr.io and switch image to ghcr.io/jaegertracing/all-in-one:2.3.0
+    image: jaegertracing/all-in-one:1.62.0
     container_name: irrigation_jaeger
     environment:
       COLLECTOR_ZIPKIN_HOST_PORT: ":9411"
+      COLLECTOR_OTLP_ENABLED: "true"
     ports:
-      - "6831:6831/udp"  # Jaeger agent
+      - "6831:6831/udp"  # Jaeger agent (legacy)
       - "16686:16686"    # UI
       - "14268:14268"    # Collector HTTP
+      - "4317:4317"      # OTLP gRPC
+      - "4318:4318"      # OTLP HTTP
     networks:
       - irrigation_network
 

@@ -3,30 +3,59 @@ package observability
 import (
 	"context"
 	"fmt"
-	"io"
+	"net"
 
 	"github.com/sebaespinosa/test_NF/config"
-	jaegercfg "github.com/uber/jaeger-client-go/config"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
-// InitJaeger initializes Jaeger tracing using the Jaeger client library
-func InitJaeger(ctx context.Context, cfg *config.JaegerConfig, serviceCfg *config.ServiceConfig) (io.Closer, error) {
-	jCfg := jaegercfg.Configuration{
-		ServiceName: serviceCfg.Name,
-		Sampler: &jaegercfg.SamplerConfig{
-			Type:  cfg.SamplerType,
-			Param: cfg.SamplerParam,
-		},
-		Reporter: &jaegercfg.ReporterConfig{
-			LogSpans:           true,
-			LocalAgentHostPort: fmt.Sprintf("%s:%d", cfg.AgentHost, cfg.AgentPort),
-		},
+// InitJaeger initializes OpenTelemetry with OTLP exporter for Jaeger
+func InitJaeger(ctx context.Context, cfg *config.JaegerConfig, serviceCfg *config.ServiceConfig) (func(context.Context) error, error) {
+	// Create OTLP gRPC exporter
+	host := cfg.AgentHost
+	if host == "localhost" {
+		// Force IPv4 to avoid ::1 refusals when container only listens on 0.0.0.0
+		host = "127.0.0.1"
 	}
+	endpoint := net.JoinHostPort(host, "4317")
 
-	closer, err := jCfg.InitGlobalTracer(serviceCfg.Name)
+	exporter, err := otlptracegrpc.New(
+		ctx,
+		otlptracegrpc.WithEndpoint(endpoint),
+		otlptracegrpc.WithInsecure(),
+		otlptracegrpc.WithDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to initialize jaeger tracer: %w", err)
+		return nil, fmt.Errorf("failed to create OTLP exporter: %w", err)
 	}
 
-	return closer, nil
+	// Create resource with service information
+	res, err := resource.New(ctx,
+		resource.WithAttributes(
+			semconv.ServiceName(serviceCfg.Name),
+			semconv.ServiceVersion(serviceCfg.Version),
+		),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create resource: %w", err)
+	}
+
+	// Create trace provider
+	tp := sdktrace.NewTracerProvider(
+		sdktrace.WithBatcher(exporter),
+		sdktrace.WithResource(res),
+		sdktrace.WithSampler(sdktrace.AlwaysSample()),
+	)
+
+	// Set global trace provider
+	otel.SetTracerProvider(tp)
+
+	// Return shutdown function
+	return tp.Shutdown, nil
 }

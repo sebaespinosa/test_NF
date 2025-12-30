@@ -56,14 +56,16 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	closer, err := observability.InitJaeger(ctx, &cfg.Jaeger, &cfg.Service)
+	shutdown, err := observability.InitJaeger(ctx, &cfg.Jaeger, &cfg.Service)
 	if err != nil {
 		logger.Fatal("failed to initialize jaeger", zap.Error(err))
 	}
 	defer func() {
-		if closer != nil {
-			if err := closer.Close(); err != nil {
-				logger.Error("failed to close jaeger", zap.Error(err))
+		if shutdown != nil {
+			shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer shutdownCancel()
+			if err := shutdown(shutdownCtx); err != nil {
+				logger.Error("failed to shutdown tracer", zap.Error(err))
 			}
 		}
 	}()
@@ -76,12 +78,15 @@ func main() {
 
 	// Initialize repositories
 	healthRepo := repository.NewHealthRepository(db)
+	farmRepo := repository.NewFarmRepository(db)
 
 	// Initialize services
 	healthService := service.NewHealthService(healthRepo, logger, cfg.Service.Version)
+	farmService := service.NewFarmService(farmRepo, logger)
 
 	// Initialize controllers
 	healthController := controller.NewHealthController(healthService)
+	farmController := controller.NewFarmController(farmService)
 
 	// Setup Gin router
 	router := gin.Default()
@@ -91,6 +96,7 @@ func main() {
 
 	// Register routes
 	router.GET("/health", healthController.GetHealth)
+	router.GET("/test_farms", farmController.GetAllFarms)
 
 	// Swagger docs
 	router.StaticFile("/docs/swagger.json", "./documentation/swagger.json")
