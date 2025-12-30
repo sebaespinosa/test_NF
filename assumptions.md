@@ -13,6 +13,8 @@ Definitions:
 - Loki
 - Jaeger with OpenTelemetry
 - filename with folder suffix for controller, service, repository, model folders
+- Add Pagination to the analytics endpoint for performance
+- Custom status codes (206 for example) to handle cases like empty responses for non-existing data on the time range
 
 
 Dudas:

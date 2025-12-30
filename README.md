@@ -77,6 +77,10 @@ To view logs in Grafana, go to http://localhost:3000 (admin/admin), add Loki as 
   - SQL-level aggregation patterns
   - Query optimization techniques
   - Connection pool tuning
+- See [AnalyticsEndpointGuide.md](documentation/AnalyticsEndpointGuide.md) for:
+  - Special definitions and considerations for the Endpoint
+  - Patterns or principles followed for optimization
+  - Documentation besides the swagger
 
 
 ## Tech Stack
@@ -147,6 +151,44 @@ HTTP Request → Controller → Service → Repository → Database
 - **Service:** Business logic and validation
 - **Repository:** Data access only
 - **Dependency Injection:** Constructor-based, no global state
+
+## API Endpoints
+
+### Health Check
+```
+GET /health
+```
+System health and version information. See [main.go](main.go) for implementation.
+
+### Irrigation Analytics
+```
+GET /v1/farms/:farm_id/irrigation/analytics
+```
+
+Comprehensive irrigation metrics with year-over-year comparisons, time-series aggregation, and sector-level breakdown.
+
+**Query Parameters:**
+- `start_date` (YYYY-MM-DD): Analysis period start (default: 90 days ago)
+- `end_date` (YYYY-MM-DD): Analysis period end (default: today)
+- `sector_id` (int): Filter to specific sector (optional)
+- `aggregation` (daily/weekly/monthly): Time-series granularity (default: daily)
+- `page` (int): Pagination page number (default: 1)
+- `limit` (int or "all"): Results per page, 1-1000 (default: 50)
+
+**Features:**
+- Year-over-year comparisons (current year vs. 1-2 years ago)
+- SQL-level aggregation using PostgreSQL DATE_TRUNC for efficiency
+- Efficiency metric calculations (real amount / nominal amount)
+- Per-sector irrigation breakdown
+- Comprehensive pagination metadata
+- Status codes: 200 (complete data), 206 (partial YoY data), 400/404/500 (errors)
+
+**Example:**
+```bash
+curl "http://localhost:8080/v1/farms/1/irrigation/analytics?start_date=2024-01-01&end_date=2024-01-31&aggregation=weekly"
+```
+
+See [documentation/AnalyticsEndpointGuide.md](documentation/AnalyticsEndpointGuide.md) for detailed specification, examples, and performance notes.
 
 ### Data Model
 

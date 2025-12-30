@@ -1,5 +1,28 @@
 basePath: /
 definitions:
+  model.AnalyticsMetrics:
+    properties:
+      average_efficiency:
+        example: 0.85
+        type: number
+      efficiency_range:
+        $ref: '#/definitions/model.EfficiencyRange'
+      total_irrigation_events:
+        example: 120
+        type: integer
+      total_irrigation_volume_mm:
+        example: 450.5
+        type: number
+    type: object
+  model.EfficiencyRange:
+    properties:
+      max:
+        example: 0.98
+        type: number
+      min:
+        example: 0.72
+        type: number
+    type: object
   model.HealthResponse:
     properties:
       message:
@@ -8,6 +31,134 @@ definitions:
         type: string
       version:
         type: string
+    type: object
+  model.IrrigationAnalyticsPeriod:
+    properties:
+      end:
+        example: "2024-01-31T23:59:59Z"
+        type: string
+      start:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+    type: object
+  model.IrrigationAnalyticsResponse:
+    properties:
+      aggregation:
+        example: daily
+        type: string
+      farm_id:
+        example: 1
+        type: integer
+      farm_name:
+        example: Green Valley Farm
+        type: string
+      metrics:
+        $ref: '#/definitions/model.AnalyticsMetrics'
+      period:
+        $ref: '#/definitions/model.IrrigationAnalyticsPeriod'
+      period_comparison:
+        $ref: '#/definitions/model.PeriodComparisonSet'
+      same_period_-1:
+        $ref: '#/definitions/model.YoYComparison'
+      same_period_-2:
+        $ref: '#/definitions/model.YoYComparison'
+      sector_breakdown:
+        items:
+          $ref: '#/definitions/model.SectorBreakdown'
+        type: array
+      time_series:
+        $ref: '#/definitions/model.TimeSeries'
+    type: object
+  model.PaginationMetadata:
+    properties:
+      limit:
+        example: 50
+        type: integer
+      page:
+        example: 1
+        type: integer
+      total_count:
+        example: 250
+        type: integer
+      total_pages:
+        example: 5
+        type: integer
+    type: object
+  model.PeriodComparison:
+    properties:
+      efficiency_change_percent:
+        example: 3.7
+        type: number
+      events_change_percent:
+        example: 4.3
+        type: number
+      volume_change_percent:
+        example: 7.2
+        type: number
+    type: object
+  model.PeriodComparisonSet:
+    properties:
+      vs_same_period_-1:
+        $ref: '#/definitions/model.PeriodComparison'
+      vs_same_period_-2:
+        $ref: '#/definitions/model.PeriodComparison'
+    type: object
+  model.SectorBreakdown:
+    properties:
+      average_efficiency:
+        example: 0.88
+        type: number
+      sector_id:
+        example: 1
+        type: integer
+      sector_name:
+        example: North Field
+        type: string
+      total_volume_mm:
+        example: 150.2
+        type: number
+    type: object
+  model.TimeSeries:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.TimeSeriesEntry'
+        type: array
+      pagination:
+        $ref: '#/definitions/model.PaginationMetadata'
+    type: object
+  model.TimeSeriesEntry:
+    properties:
+      date:
+        example: "2024-01-01"
+        type: string
+      efficiency:
+        example: 0.864
+        type: number
+      event_count:
+        example: 3
+        type: integer
+      nominal_amount_mm:
+        example: 12.5
+        type: number
+      real_amount_mm:
+        example: 10.8
+        type: number
+    type: object
+  model.YoYComparison:
+    properties:
+      average_efficiency:
+        type: number
+      data_incomplete:
+        type: boolean
+      efficiency_range:
+        $ref: '#/definitions/model.EfficiencyRange'
+      note:
+        type: string
+      total_irrigation_events:
+        type: integer
+      total_irrigation_volume_mm:
+        type: number
     type: object
 info:
   contact: {}
@@ -34,4 +185,82 @@ paths:
       summary: Health check
       tags:
       - health
+  /v1/farms/{farm_id}/irrigation/analytics:
+    get:
+      description: Returns comprehensive irrigation analytics with year-over-year
+        comparison, time-series data, and sector breakdown
+      parameters:
+      - description: Farm ID
+        example: 1
+        in: path
+        name: farm_id
+        required: true
+        type: integer
+      - description: Start date (YYYY-MM-DD format, defaults to 90 days ago)
+        example: "2024-01-01"
+        in: query
+        name: start_date
+        type: string
+      - description: End date (YYYY-MM-DD format, defaults to today)
+        example: "2024-01-31"
+        in: query
+        name: end_date
+        type: string
+      - description: Filter by specific irrigation sector (optional)
+        example: 5
+        in: query
+        name: sector_id
+        type: integer
+      - description: 'Aggregation granularity: daily, weekly, monthly (default: daily)'
+        enum:
+        - daily
+        - weekly
+        - monthly
+        example: daily
+        in: query
+        name: aggregation
+        type: string
+      - description: 'Page number for time-series results (1-indexed, default: 1)'
+        example: 1
+        in: query
+        name: page
+        type: integer
+      - description: 'Results per page (default: 50, max: 1000, use ''all'' for all
+          results)'
+        example: 50
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Analytics data with complete year-over-year comparison
+          schema:
+            $ref: '#/definitions/model.IrrigationAnalyticsResponse'
+        "206":
+          description: Partial content - previous year data incomplete or missing
+          schema:
+            $ref: '#/definitions/model.IrrigationAnalyticsResponse'
+        "400":
+          description: Invalid request parameters or date format
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Farm not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get irrigation analytics for a farm
+      tags:
+      - analytics
 swagger: "2.0"
