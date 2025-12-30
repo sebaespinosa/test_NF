@@ -394,6 +394,20 @@ func (c *UserController) GetUser(ctx *gin.Context) {
 }
 ```
 
+**Swagger Annotations:** Every new endpoint must include swag annotations on the controller handler with at least:
+- `@Summary` and `@Description`
+- `@Tags <feature>`
+- `@Accept`/`@Produce` where relevant (commonly `json`)
+- Request/response schemas via `@Param` and `@Success`/`@Failure` using model types
+- `@Router /path [method]`
+
+**Regenerating Swagger Spec:**
+```
+go install github.com/swaggo/swag/cmd/swag@latest
+$(go env GOPATH)/bin/swag init --output ./documentation --dir ./ --outputTypes json,yaml
+```
+Static docs are served from `documentation/swagger.json` via `/swagger/doc.json` and the UI at `/swagger/index.html`.
+
 **5. Register Route** (`main.go`)
 ```go
 router.GET("/users/:id", userController.GetUser)
@@ -418,6 +432,7 @@ Test files should use standard Go `testing` package.
 - **Types/Functions:** PascalCase (`GetUser`, `UserRepository`)
 - **Variables/Constants:** camelCase (`userName`, `maxRetries`)
 - **Constants:** UPPER_SNAKE_CASE for unexported package constants
+- **File names (controllers/services/repositories/models):** use `<feature>_<layer>.go` (e.g., `health_controller.go`, `health_service.go`, `health_repository.go`, `health_model.go`) to avoid filename collisions across layers
 
 ### Error Handling
 

@@ -1,0 +1,37 @@
+basePath: /
+definitions:
+  model.HealthResponse:
+    properties:
+      message:
+        type: string
+      status:
+        type: string
+      version:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: API for managing irrigation analytics within an agricultural platform.
+  title: Irrigation Analytics API
+  version: 0.0.1
+paths:
+  /health:
+    get:
+      description: Returns the service health status and version
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.HealthResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Health check
+      tags:
+      - health
+swagger: "2.0"

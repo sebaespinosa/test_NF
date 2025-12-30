@@ -18,6 +18,13 @@ func NewHealthController(service *service.HealthService) *HealthController {
 }
 
 // GetHealth handles GET /health requests
+// @Summary Health check
+// @Description Returns the service health status and version
+// @Tags health
+// @Produce json
+// @Success 200 {object} model.HealthResponse
+// @Failure 500 {object} map[string]string
+// @Router /health [get]
 func (c *HealthController) GetHealth(ctx *gin.Context) {
 	health, err := c.service.GetHealth(ctx.Request.Context())
 	if err != nil {

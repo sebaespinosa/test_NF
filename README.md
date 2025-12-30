@@ -37,6 +37,8 @@ curl http://localhost:8080/health
 | **Grafana** | http://localhost:3000 | Log/metric dashboards (admin/admin) |
 | **Loki** | http://localhost:3100 | Log aggregation |
 | **PostgreSQL** | localhost:5432 | Database |
+| **Swagger UI** | http://localhost:8080/swagger/index.html | API docs viewer (navigate directly to /swagger/index.html) |
+| **Swagger JSON** | http://localhost:8080/docs/swagger.json | OpenAPI spec |
 
 ## Tech Stack
 
@@ -136,6 +138,16 @@ LOKI_URL=http://localhost:3100
 - View traces in Jaeger UI at http://localhost:16686
 
 ## Development
+
+### API Docs (Swagger)
+- View UI: http://localhost:8080/swagger/index.html (no redirect from /swagger)
+- View JSON: http://localhost:8080/docs/swagger.json
+- Regenerate spec (JSON/YAML only):
+	```bash
+	go install github.com/swaggo/swag/cmd/swag@latest
+	$(go env GOPATH)/bin/swag init --output ./documentation --dir ./ --outputTypes json,yaml
+	```
+	(Static files are served from `documentation/swagger.json` and `documentation/swagger.yaml`; Go stubs are not used.)
 
 ### Add a New Endpoint
 

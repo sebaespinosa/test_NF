@@ -1,5 +1,10 @@
 package main
 
+// @title Irrigation Analytics API
+// @version 0.0.1
+// @description API for managing irrigation analytics within an agricultural platform.
+// @BasePath /
+
 import (
 	"context"
 	"fmt"
@@ -19,6 +24,8 @@ import (
 	"github.com/sebaespinosa/test_NF/internal/observability"
 	"github.com/sebaespinosa/test_NF/repository"
 	"github.com/sebaespinosa/test_NF/service"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"go.uber.org/zap"
 )
 
@@ -84,6 +91,11 @@ func main() {
 
 	// Register routes
 	router.GET("/health", healthController.GetHealth)
+
+	// Swagger docs
+	router.StaticFile("/docs/swagger.json", "./documentation/swagger.json")
+	swaggerURL := ginSwagger.URL("/docs/swagger.json")
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, swaggerURL))
 
 	// Create HTTP server
 	srv := &http.Server{
