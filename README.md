@@ -2,6 +2,8 @@
 
 A production-ready REST API for managing irrigation analytics in agricultural platforms, built with Go using Gin, GORM, and comprehensive observability tooling.
 
+***NOTE:** Please review [assumpmtions](assumptions.md) for the evaluation
+
 ## Quick Start
 
 ### Prerequisites
@@ -40,9 +42,12 @@ curl http://localhost:8080/health
 | **Grafana** | http://localhost:3000 | Log/metric dashboards (admin/admin) |
 | **Loki** | http://localhost:3100 | Log aggregation |
 | **Promtail** | (internal) | Log shipper (pushes container logs to Loki) |
+| **Nginx Proxy Manager** | http://localhost:81 | Reverse proxy & SSL manager (proxies on :80/:443 to the host-run API) |
 | **PostgreSQL** | localhost:5432 | Database |
 | **Swagger UI** | http://localhost:8080/swagger/index.html | API docs viewer (navigate directly to /swagger/index.html) |
 | **Swagger JSON** | http://localhost:8080/docs/swagger.json | OpenAPI spec |
+
+See [documentation/NginxProxyManager.md](documentation/NginxProxyManager.md) for reverse proxy and HTTPS setup.
 
 To view logs in Grafana, go to http://localhost:3000 (admin/admin), add Loki as a datasource (http://loki:3100), and query logs.
 

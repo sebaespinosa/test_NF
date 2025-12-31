@@ -10,6 +10,7 @@ Assumptions:
 - No caching strategy
 
 Definitions:
+- Environment files not excluded for simplicity
 - Store logs with Loki
 - Use Jaeger for APM and tracing with OpenTelemetry
 - Filename with folder suffix for controller, service, repository, model folders

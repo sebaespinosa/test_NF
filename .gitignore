@@ -1,0 +1,44 @@
+# Build artifacts / binaries
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Coverage / profiling
+*.coverprofile
+coverage.*
+*.cov
+*.prof
+*.pprof
+
+# Logs / temp
+*.log
+*.tmp
+*.swp
+*.swo
+
+# Editor / OS metadata
+.idea/
+.vscode/
+.DS_Store
+
+# Environment files
+#.env
+#.env.*
+#*.env
+#.envrc
+
+# SSL / certificates
+ssl/
+ssl/**
+*.crt
+*.key
+*.pem
+
+# Go workspace helpers
+go.work
+go.work.sum

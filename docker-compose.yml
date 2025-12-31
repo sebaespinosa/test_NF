@@ -84,10 +84,31 @@ services:
     networks:
       - irrigation_network
 
+  # Nginx Proxy Manager for reverse proxy and SSL management
+  npm:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: npm
+    ports:
+      - "80:80"    # HTTP (public)
+      - "443:443"  # HTTPS (public)
+      - "81:81"    # Admin UI (restrict in production)
+    environment:
+      - DISABLE_IPV6=true
+    volumes:
+      - npm_data:/data
+      - npm_letsencrypt:/etc/letsencrypt
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    networks:
+      - irrigation_network
+
 volumes:
   postgres_data:
   loki_data:
   grafana_data:
+  npm_data:
+  npm_letsencrypt:
 
 networks:
   irrigation_network:
